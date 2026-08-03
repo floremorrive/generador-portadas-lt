@@ -1,0 +1,136 @@
+@font-face {
+  font-family: 'Inter Tight';
+  src: url('../assets/fonts/InterTight.ttf') format('truetype');
+  font-weight: 400 700;
+}
+
+:root {
+  --terracota: #8A3D33;
+  --papel: #DEDEDE;
+  --texto: #222;
+  --fondo: #f4f3f1;
+  --borde: #d9d6d0;
+  font-family: 'Inter Tight', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+header {
+  padding: 24px 32px 8px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.subtitulo {
+  margin: 4px 0 0;
+  color: var(--terracota);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 16px 32px 48px;
+  align-items: flex-start;
+}
+
+.panel-controles {
+  flex: 0 0 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campo label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+}
+
+input[type="text"], input[type="file"] {
+  padding: 8px 10px;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+input[type="range"] { width: 100%; }
+
+.segmentado {
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.botones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+button {
+  background: var(--terracota);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover { filter: brightness(1.08); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.estado {
+  min-height: 18px;
+  font-size: 13px;
+  color: #666;
+}
+
+.panel-preview {
+  flex: 1 1 480px;
+  display: flex;
+  justify-content: center;
+}
+
+.preview-wrap {
+  width: 100%;
+  max-width: 720px;
+  border: 1px solid var(--borde);
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: grab;
+}
+
+.preview-wrap.arrastrando { cursor: grabbing; }
+
+#canvas-preview {
+  display: block;
+  width: 100%;
+  height: auto;
+}

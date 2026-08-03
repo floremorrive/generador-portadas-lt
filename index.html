@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de Portada y Miniatura — La Tribuna</title>
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header>
+    <h1>Generador de Portada y Miniatura</h1>
+    <p class="subtitulo">La Tribuna · En defensa de Colombia</p>
+  </header>
+
+  <main>
+    <section class="panel-controles">
+      <div class="campo">
+        <label for="input-foto">Foto de la nota</label>
+        <input type="file" id="input-foto" accept="image/*">
+      </div>
+
+      <div class="campo">
+        <label for="input-zoom">Zoom / encuadre (arrastra la foto en la vista previa para moverla)</label>
+        <input type="range" id="input-zoom" min="1" max="2.5" step="0.01" value="1">
+      </div>
+
+      <div class="campo">
+        <label for="input-credito">Texto de crédito de la foto</label>
+        <input type="text" id="input-credito" placeholder="Foto: Cortesía... / Generada con IA" maxlength="80">
+      </div>
+
+      <div class="campo">
+        <label>Variante de la miniatura</label>
+        <div class="segmentado">
+          <label><input type="radio" name="variante" value="negra" checked> Negra</label>
+          <label><input type="radio" name="variante" value="roja"> Roja</label>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label>Vista previa</label>
+        <div class="segmentado">
+          <label><input type="radio" name="vista" value="portada" checked> Portada</label>
+          <label><input type="radio" name="vista" value="miniatura"> Miniatura</label>
+        </div>
+      </div>
+
+      <div class="botones">
+        <button id="btn-portada" type="button">Descargar portada (1800×1200)</button>
+        <button id="btn-miniatura" type="button">Descargar miniatura (1200×628)</button>
+      </div>
+
+      <p id="estado" class="estado"></p>
+    </section>
+
+    <section class="panel-preview">
+      <div id="preview-wrap" class="preview-wrap">
+        <canvas id="canvas-preview"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <canvas id="canvas-export" style="display:none"></canvas>
+
+  <script>document.write('<script src="js/render.js?v=' + Date.now() + '"><\/script>');</script>
+  <script>document.write('<script src="js/app.js?v=' + Date.now() + '"><\/script>');</script>
+</body>
+</html>
