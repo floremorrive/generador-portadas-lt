@@ -318,11 +318,11 @@ async function dibujarPuntosVista(canvas, { photo, focal }) {
   const logoH = Math.round(logoW * (logo.height / logo.width));
   ctx.drawImage(logo, tituloX, logoY, logoW, logoH);
 
-  // Linea completa (no un subrayado corto del logo), a 2cm arriba de "Puntos
-  // de vista". Usa la misma equivalencia 1cm=32px que ya usamos en Miniatura.
+  // Linea completa: desde el margen del texto hasta el borde de la foto del
+  // autor (rightX), SIN margen de por medio. A 2cm arriba de "Puntos de vista".
   const lineaMedia = await loadImage(PV_ASSETS.lineaMedia);
   const lineaMediaY = tituloTopY - 2 * PX_POR_CM;
-  const lineaMediaW = rightX - tituloX - 60;
+  const lineaMediaW = rightX - tituloX;
   ctx.drawImage(lineaMedia, tituloX, lineaMediaY, lineaMediaW, 5);
 
   ctx.fillStyle = '#1A1A1A';
