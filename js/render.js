@@ -374,12 +374,15 @@ async function dibujarPuntosVista(canvas, { photo, focal }) {
   const wallLineas = await loadImage(PV_ASSETS.wallLineas);
   ctx.drawImage(wallLineas, 0, 0, PV_W, PV_H);
 
-  // Lineas finas (inferior, como borde del banner; vertical, entre el panel
-  // y la foto): al final, para que queden ENCIMA del grano y del marco. Antes
-  // se dibujaban primero y esas capas las tapaban por completo.
+  // Lineas finas: al final, para que queden ENCIMA del grano y del marco.
+  // Antes se dibujaban primero y esas capas las tapaban por completo.
   const lineaInferior = await loadImage(PV_ASSETS.lineaInferior);
   ctx.drawImage(lineaInferior, 0, contentH - 2, PV_W, 4);
   const lineaVertical = await loadImage(PV_ASSETS.lineaVertical);
+  // 1) justo al borde de la franja rayada del marco (no la que separa panel/foto)
+  const bordeRayadoX = Math.round(PV_W * (165 / 2200));
+  ctx.drawImage(lineaVertical, bordeRayadoX - 2, 0, 4, contentH);
+  // 2) entre el panel de texto y la foto
   ctx.drawImage(lineaVertical, rightX - 2, 0, 4, contentH);
 }
 
