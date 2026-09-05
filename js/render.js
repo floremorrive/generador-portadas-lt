@@ -252,7 +252,8 @@ async function dibujarMiniatura(canvas, { photo, credito, focal, variante = 'neg
 }
 
 // ============================================================
-// PORTADA "PUNTOS DE VISTA" — funcion aparte, no toca Portada ni Miniatura.
+// MINIATURA "PUNTOS DE VISTA" — funcion aparte, no toca Portada ni Miniatura.
+// Mismo tamaño que la Miniatura normal (1200x628), NO el de Portada.
 // Panel izquierdo (logo + "Puntos de vista") + panel derecho (foto del autor
 // en blanco y negro) + banner terracota inferior. Texto SIEMPRE fijo.
 // ============================================================
@@ -270,11 +271,11 @@ async function preloadPV() {
   await Promise.all(Object.values(PV_ASSETS).map(loadImage));
 }
 
-// Mismo tamaño que Portada y Miniatura: 1800x1200 (así lo pidió el usuario,
-// aunque el Canva original mida 2560x1440 / 16:9 — las proporciones internas
-// se calculan igual, sólo cambia el lienzo final donde se ubican).
-const PV_W = PORTADA_W;
-const PV_H = PORTADA_H;
+// Mismo tamaño que la Miniatura normal: 1200x628 (el Canva original mide
+// 2560x1440 / 16:9 — las proporciones internas se calculan igual, sólo
+// cambia el lienzo final donde se ubican).
+const PV_W = MINI_W;
+const PV_H = MINI_H;
 
 async function dibujarPuntosVista(canvas, { photo, focal }) {
   canvas.width = PV_W;
@@ -302,7 +303,7 @@ async function dibujarPuntosVista(canvas, { photo, focal }) {
   // Margen izquierdo de todo el contenido (logo, lineas, textos): justo
   // despues del borde rayado del marco, sin el hueco que quedaba antes.
   const bordeRayadoX = Math.round(PV_W * (165 / 2200));
-  const tituloX = bordeRayadoX + 28;
+  const tituloX = bordeRayadoX + Math.round(PV_W * (28 / 1800));
   const tituloFontSize = Math.round(PV_H * (102 / 1440));
   const tituloTopY = Math.round(PV_H * (970.9 / 1440));
   const tituloBaselineY = tituloTopY + Math.round(tituloFontSize * 0.8);
@@ -317,7 +318,7 @@ async function dibujarPuntosVista(canvas, { photo, focal }) {
   ctx.fillRect(0, 0, leftPanelW, PV_H);
 
   const logoY = Math.round(PV_H * 0.089);
-  const logoW = 540;
+  const logoW = Math.round(PV_W * (540 / 1800));
   const logoH = Math.round(logoW * (logo.height / logo.width));
   ctx.drawImage(logo, tituloX, logoY, logoW, logoH);
 

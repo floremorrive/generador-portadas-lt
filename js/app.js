@@ -114,11 +114,11 @@ document.getElementById('btn-miniatura').addEventListener('click', async () => {
 });
 
 document.getElementById('btn-puntos-vista').addEventListener('click', async () => {
-  setEstado('Generando portada Puntos de vista…');
+  setEstado('Generando miniatura Puntos de vista…');
   await dibujarPuntosVista(exportCanvas, { photo: estado.photo, focal: estado.focal });
   const blob = await exportarWebp(exportCanvas, 100 * 1024);
-  descargarBlob(blob, 'portada-puntos-de-vista.webp');
-  setEstado(`Portada Puntos de vista lista (${Math.round(blob.size / 1024)} KB).`);
+  descargarBlob(blob, 'miniatura-puntos-de-vista.webp');
+  setEstado(`Miniatura Puntos de vista lista (${Math.round(blob.size / 1024)} KB).`);
 });
 
 // Primer render (sin foto) para mostrar el layout de una vez.
