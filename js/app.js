@@ -17,7 +17,7 @@ async function actualizarPreview() {
   if (estado.vista === 'portada') {
     await dibujarPortada(previewCanvas, { photo: estado.photo, credito: estado.credito, focal: estado.focal });
   } else if (estado.vista === 'puntos-vista-portada') {
-    await dibujarPuntosVistaPortada(previewCanvas, { photo: estado.photo, focal: estado.focal });
+    await dibujarPuntosVistaPortada(previewCanvas, { photo: estado.photo, credito: estado.credito, focal: estado.focal });
   } else if (estado.vista === 'puntos-vista-miniatura') {
     await dibujarPuntosVistaMiniatura(previewCanvas, { photo: estado.photo, focal: estado.focal });
   } else {
@@ -117,7 +117,7 @@ document.getElementById('btn-miniatura').addEventListener('click', async () => {
 
 document.getElementById('btn-puntos-vista-portada').addEventListener('click', async () => {
   setEstado('Generando portada Puntos de vista…');
-  await dibujarPuntosVistaPortada(exportCanvas, { photo: estado.photo, focal: estado.focal });
+  await dibujarPuntosVistaPortada(exportCanvas, { photo: estado.photo, credito: estado.credito, focal: estado.focal });
   const blob = await exportarWebp(exportCanvas, 100 * 1024);
   descargarBlob(blob, 'portada-puntos-de-vista.webp');
   setEstado(`Portada Puntos de vista lista (${Math.round(blob.size / 1024)} KB).`);

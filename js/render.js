@@ -387,10 +387,43 @@ async function dibujarPuntosVistaEn(canvas, { photo, focal, PV_W, PV_H }) {
   ctx.drawImage(lineaVertical, rightX - 2, 0, 4, contentH);
 }
 
-// Las dos piezas reales que se usan: Portada (1800x1200) y Miniatura (1200x628).
-async function dibujarPuntosVistaPortada(canvas, { photo, focal }) {
-  await dibujarPuntosVistaEn(canvas, { photo, focal, PV_W: PORTADA_W, PV_H: PORTADA_H });
+// PORTADA de Puntos de vista: NO es el diseño de dos paneles de arriba (ese
+// es solo para la Miniatura). Es igual a la Portada normal — foto a sangre
+// completa + capas + logo blanco — pero la foto se convierte a blanco y negro.
+async function dibujarPuntosVistaPortada(canvas, { photo, credito, focal }) {
+  canvas.width = PORTADA_W;
+  canvas.height = PORTADA_H;
+  const ctx = canvas.getContext('2d');
+  await preloadAssets();
+
+  ctx.fillStyle = '#111111';
+  ctx.fillRect(0, 0, PORTADA_W, PORTADA_H);
+
+  if (photo) {
+    ctx.save();
+    ctx.filter = 'grayscale(1)';
+    drawPhotoFocal(ctx, photo, 0, 0, PORTADA_W, PORTADA_H, focal);
+    ctx.restore();
+  }
+
+  const lineas = await loadImage(ASSETS.lineas);
+  drawCoverCentered(ctx, lineas, 0, 0, PORTADA_W, PORTADA_H);
+  const lineas2 = await loadImage(ASSETS.lineas2);
+  drawCoverCentered(ctx, lineas2, 0, 0, PORTADA_W, PORTADA_H);
+
+  drawCreditText(ctx, credito, 44, PORTADA_H - 40, { size: 30 });
+
+  const logo = await loadImage(ASSETS.logo);
+  const logoWhite = recolorImage(logo, '#FFFFFF');
+  const logoH = 70;
+  const logoW = logoH * (logo.width / logo.height);
+  const logoX = PORTADA_W - logoW - 44;
+  const logoY = PORTADA_H - logoH - 36;
+  ctx.drawImage(logoWhite, logoX, logoY, logoW, logoH);
 }
+
+// MINIATURA de Puntos de vista: el diseño de dos paneles (logo + "Puntos de
+// vista" a la izquierda, foto en blanco y negro a la derecha).
 async function dibujarPuntosVistaMiniatura(canvas, { photo, focal }) {
   await dibujarPuntosVistaEn(canvas, { photo, focal, PV_W: MINI_W, PV_H: MINI_H });
 }
