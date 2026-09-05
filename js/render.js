@@ -299,12 +299,15 @@ async function dibujarPuntosVista(canvas, { photo, focal }) {
   const bannerH = Math.round(PV_H * ((1440 - 1304.9) / 1440)); // ~95
   const contentH = PV_H - bannerH;
 
-  const tituloX = Math.round(PV_W * (299.3 / 2560));
+  // Margen izquierdo de todo el contenido (logo, lineas, textos): justo
+  // despues del borde rayado del marco, sin el hueco que quedaba antes.
+  const bordeRayadoX = Math.round(PV_W * (165 / 2200));
+  const tituloX = bordeRayadoX + 28;
   const tituloFontSize = Math.round(PV_H * (102 / 1440));
   const tituloTopY = Math.round(PV_H * (970.9 / 1440));
   const tituloBaselineY = tituloTopY + Math.round(tituloFontSize * 0.8);
 
-  const subX = Math.round(PV_W * (310.7 / 2560));
+  const subX = tituloX;
   const subFontSize = Math.round(PV_H * (43.2 / 1440));
   const subTopY = Math.round(PV_H * (1123 / 1440));
   const subBaselineY = subTopY + Math.round(subFontSize * 0.8);
@@ -380,7 +383,6 @@ async function dibujarPuntosVista(canvas, { photo, focal }) {
   ctx.drawImage(lineaInferior, 0, contentH - 2, PV_W, 4);
   const lineaVertical = await loadImage(PV_ASSETS.lineaVertical);
   // 1) justo al borde de la franja rayada del marco (no la que separa panel/foto)
-  const bordeRayadoX = Math.round(PV_W * (165 / 2200));
   ctx.drawImage(lineaVertical, bordeRayadoX - 2, 0, 4, contentH);
   // 2) entre el panel de texto y la foto
   ctx.drawImage(lineaVertical, rightX - 2, 0, 4, contentH);
