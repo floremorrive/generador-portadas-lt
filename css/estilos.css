@@ -4,6 +4,18 @@
   font-weight: 400 700;
 }
 
+@font-face {
+  font-family: 'Rajdhani';
+  src: url('../assets/fonts/Rajdhani-Medium.ttf') format('truetype');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Rajdhani';
+  src: url('../assets/fonts/Rajdhani-Bold.ttf') format('truetype');
+  font-weight: 700;
+}
+
 :root {
   --terracota: #8A3D33;
   --papel: #DEDEDE;

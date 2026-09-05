@@ -16,6 +16,8 @@ function setEstado(msg) { elEstado.textContent = msg || ''; }
 async function actualizarPreview() {
   if (estado.vista === 'portada') {
     await dibujarPortada(previewCanvas, { photo: estado.photo, credito: estado.credito, focal: estado.focal });
+  } else if (estado.vista === 'puntos-vista') {
+    await dibujarPuntosVista(previewCanvas, { photo: estado.photo, focal: estado.focal });
   } else {
     await dibujarMiniatura(previewCanvas, {
       photo: estado.photo,
@@ -109,6 +111,14 @@ document.getElementById('btn-miniatura').addEventListener('click', async () => {
   const blob = await exportarWebp(exportCanvas, 100 * 1024);
   descargarBlob(blob, `miniatura-${estado.variante}.webp`);
   setEstado(`Miniatura ${estado.variante} lista (${Math.round(blob.size / 1024)} KB).`);
+});
+
+document.getElementById('btn-puntos-vista').addEventListener('click', async () => {
+  setEstado('Generando portada Puntos de vista…');
+  await dibujarPuntosVista(exportCanvas, { photo: estado.photo, focal: estado.focal });
+  const blob = await exportarWebp(exportCanvas, 100 * 1024);
+  descargarBlob(blob, 'portada-puntos-de-vista.webp');
+  setEstado(`Portada Puntos de vista lista (${Math.round(blob.size / 1024)} KB).`);
 });
 
 // Primer render (sin foto) para mostrar el layout de una vez.

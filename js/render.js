@@ -251,6 +251,138 @@ async function dibujarMiniatura(canvas, { photo, credito, focal, variante = 'neg
   }
 }
 
+// ============================================================
+// PORTADA "PUNTOS DE VISTA" — funcion aparte, no toca Portada ni Miniatura.
+// Panel izquierdo (logo + "Puntos de vista") + panel derecho (foto del autor
+// en blanco y negro) + banner terracota inferior. Texto SIEMPRE fijo.
+// ============================================================
+const PV_ASSETS = {
+  lineaMedia: 'assets/img/puntos-vista/linea-horizontal-media.png',
+  lineaInferior: 'assets/img/puntos-vista/linea-horizontal-inferior.png',
+  lineaVertical: 'assets/img/puntos-vista/linea-vertical.png',
+  banner: 'assets/img/puntos-vista/banner-vinotinto.png',
+  ruido: 'assets/img/puntos-vista/ruido-superior.png',
+  lineasFoto: 'assets/img/puntos-vista/lineas-finas-foto-autor.png',
+  wallLineas: 'assets/img/puntos-vista/wall-lineas-borde.png',
+};
+
+async function preloadPV() {
+  await Promise.all(Object.values(PV_ASSETS).map(loadImage));
+}
+
+// Mismo tamaño que Portada y Miniatura: 1800x1200 (así lo pidió el usuario,
+// aunque el Canva original mida 2560x1440 / 16:9 — las proporciones internas
+// se calculan igual, sólo cambia el lienzo final donde se ubican).
+const PV_W = PORTADA_W;
+const PV_H = PORTADA_H;
+
+async function dibujarPuntosVista(canvas, { photo, focal }) {
+  canvas.width = PV_W;
+  canvas.height = PV_H;
+  const ctx = canvas.getContext('2d');
+  await preloadPV();
+  // El canvas no espera solo a que la fuente @font-face esté declarada en CSS:
+  // hay que forzar la carga o cae en la fuente por defecto sin avisar.
+  await Promise.all([
+    document.fonts.load("500 72px Rajdhani"),
+    document.fonts.load("700 72px Rajdhani"),
+    document.fonts.load("500 30px Rajdhani"),
+    document.fonts.load("700 30px Rajdhani"),
+  ]);
+  const logo = await loadImage(ASSETS.logo);
+
+  // ---- medidas sacadas del panel de Posición de Canva (fracciones del
+  // lienzo real 2560x1440), aplicadas a nuestro lienzo de 1800x1013 ----
+  const leftPanelW = Math.round(PV_W * (1341.3 / 2560)); // 943
+  const rightX = leftPanelW;
+  const rightW = PV_W - leftPanelW;
+  const bannerH = Math.round(PV_H * ((1440 - 1304.9) / 1440)); // ~95
+  const contentH = PV_H - bannerH;
+
+  const tituloX = Math.round(PV_W * (299.3 / 2560));
+  const tituloFontSize = Math.round(PV_H * (102 / 1440));
+  const tituloTopY = Math.round(PV_H * (970.9 / 1440));
+  const tituloBaselineY = tituloTopY + Math.round(tituloFontSize * 0.8);
+
+  const subX = Math.round(PV_W * (310.7 / 2560));
+  const subFontSize = Math.round(PV_H * (43.2 / 1440));
+  const subTopY = Math.round(PV_H * (1123 / 1440));
+  const subBaselineY = subTopY + Math.round(subFontSize * 0.8);
+
+  // Panel izquierdo: BLANCO (no el papel gris de Miniatura) + logo + linea + "Puntos de vista"
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, leftPanelW, PV_H);
+
+  const logoY = Math.round(PV_H * 0.089);
+  const logoW = 540;
+  const logoH = Math.round(logoW * (logo.height / logo.width));
+  ctx.drawImage(logo, tituloX, logoY, logoW, logoH);
+
+  // Linea completa (no un subrayado corto del logo), a 2cm arriba de "Puntos
+  // de vista". Usa la misma equivalencia 1cm=32px que ya usamos en Miniatura.
+  const lineaMedia = await loadImage(PV_ASSETS.lineaMedia);
+  const lineaMediaY = tituloTopY - 2 * PX_POR_CM;
+  const lineaMediaW = rightX - tituloX - 60;
+  ctx.drawImage(lineaMedia, tituloX, lineaMediaY, lineaMediaW, 5);
+
+  ctx.fillStyle = '#1A1A1A';
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'left';
+  ctx.font = `500 ${tituloFontSize}px Rajdhani`;
+  const w1 = ctx.measureText('Puntos ').width;
+  ctx.fillText('Puntos ', tituloX, tituloBaselineY);
+  ctx.font = `700 ${tituloFontSize}px Rajdhani`;
+  ctx.fillText('de vista', tituloX + w1, tituloBaselineY);
+
+  ctx.font = `500 ${subFontSize}px Rajdhani`;
+  const s1 = ctx.measureText('En defensa ').width;
+  ctx.fillText('En defensa ', subX, subBaselineY);
+  ctx.font = `700 ${subFontSize}px Rajdhani`;
+  ctx.fillText('de Colombia.', subX + s1, subBaselineY);
+
+  // Panel derecho: foto del autor en blanco y negro + capas (fondo BLANCO,
+  // la foto es un recorte con transparencia, no una foto a sangre completa).
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(rightX, 0, rightW, contentH);
+  if (photo) {
+    ctx.save();
+    ctx.filter = 'grayscale(1)';
+    drawPhotoFocal(ctx, photo, rightX, 0, rightW, contentH, focal);
+    ctx.restore();
+  }
+  const lineasFoto = await loadImage(PV_ASSETS.lineasFoto);
+  drawCoverCentered(ctx, lineasFoto, rightX, 0, rightW, contentH);
+
+  // Banner terracota al pie (la linea que va como su borde superior se
+  // dibuja mas abajo, DESPUES del grano y el marco, porque si no esas capas
+  // la tapan por completo).
+  const banner = await loadImage(PV_ASSETS.banner);
+  drawCoverCentered(ctx, banner, 0, contentH, PV_W, bannerH);
+
+  // Grano fino de cierre sobre todo el lienzo (mas suave: el PNG ya trae ~25%
+  // de opacidad propia, y sumado a todo lo demas se veia sucio sobre la foto).
+  const ruido = await loadImage(PV_ASSETS.ruido);
+  ctx.save();
+  ctx.globalAlpha = 0.45;
+  drawCoverCentered(ctx, ruido, 0, 0, PV_W, PV_H);
+  ctx.restore();
+
+  // Marco de líneas: va alrededor de TODA la portada (los dos paneles), pegado
+  // al borde izquierdo y al borde inferior — no solo sobre la foto. Por eso
+  // se estira directo al lienzo completo, no con "cover" centrado (que le
+  // recortaría justo la parte con textura).
+  const wallLineas = await loadImage(PV_ASSETS.wallLineas);
+  ctx.drawImage(wallLineas, 0, 0, PV_W, PV_H);
+
+  // Lineas finas (inferior, como borde del banner; vertical, entre el panel
+  // y la foto): al final, para que queden ENCIMA del grano y del marco. Antes
+  // se dibujaban primero y esas capas las tapaban por completo.
+  const lineaInferior = await loadImage(PV_ASSETS.lineaInferior);
+  ctx.drawImage(lineaInferior, 0, contentH - 2, PV_W, 4);
+  const lineaVertical = await loadImage(PV_ASSETS.lineaVertical);
+  ctx.drawImage(lineaVertical, rightX - 2, 0, 4, contentH);
+}
+
 // Exporta el canvas a WebP, bajando calidad (y si hace falta, tamaño) hasta quedar bajo maxBytes.
 function canvasToBlob(canvas, type, quality) {
   return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
