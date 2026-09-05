@@ -348,7 +348,9 @@ async function dibujarPuntosVistaEn(canvas, { photo, focal, PV_W, PV_H }) {
   ctx.fillRect(rightX, 0, rightW, contentH);
   if (photo) {
     ctx.save();
-    ctx.filter = 'grayscale(1)';
+    // grayscale() solo usa luminancia: los colores saturados (rojos, etc.)
+    // quedan muy oscuros. Se compensa subiendo brillo despues de convertir.
+    ctx.filter = 'grayscale(1) brightness(1.25) contrast(0.95)';
     drawPhotoFocal(ctx, photo, rightX, 0, rightW, contentH, focal);
     ctx.restore();
   }
@@ -401,7 +403,9 @@ async function dibujarPuntosVistaPortada(canvas, { photo, credito, focal }) {
 
   if (photo) {
     ctx.save();
-    ctx.filter = 'grayscale(1)';
+    // grayscale() solo usa luminancia: los colores saturados (rojos, etc.)
+    // quedan muy oscuros. Se compensa subiendo brillo despues de convertir.
+    ctx.filter = 'grayscale(1) brightness(1.25) contrast(0.95)';
     drawPhotoFocal(ctx, photo, 0, 0, PORTADA_W, PORTADA_H, focal);
     ctx.restore();
   }
