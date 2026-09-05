@@ -16,8 +16,10 @@ function setEstado(msg) { elEstado.textContent = msg || ''; }
 async function actualizarPreview() {
   if (estado.vista === 'portada') {
     await dibujarPortada(previewCanvas, { photo: estado.photo, credito: estado.credito, focal: estado.focal });
-  } else if (estado.vista === 'puntos-vista') {
-    await dibujarPuntosVista(previewCanvas, { photo: estado.photo, focal: estado.focal });
+  } else if (estado.vista === 'puntos-vista-portada') {
+    await dibujarPuntosVistaPortada(previewCanvas, { photo: estado.photo, focal: estado.focal });
+  } else if (estado.vista === 'puntos-vista-miniatura') {
+    await dibujarPuntosVistaMiniatura(previewCanvas, { photo: estado.photo, focal: estado.focal });
   } else {
     await dibujarMiniatura(previewCanvas, {
       photo: estado.photo,
@@ -113,9 +115,17 @@ document.getElementById('btn-miniatura').addEventListener('click', async () => {
   setEstado(`Miniatura ${estado.variante} lista (${Math.round(blob.size / 1024)} KB).`);
 });
 
-document.getElementById('btn-puntos-vista').addEventListener('click', async () => {
+document.getElementById('btn-puntos-vista-portada').addEventListener('click', async () => {
+  setEstado('Generando portada Puntos de vista…');
+  await dibujarPuntosVistaPortada(exportCanvas, { photo: estado.photo, focal: estado.focal });
+  const blob = await exportarWebp(exportCanvas, 100 * 1024);
+  descargarBlob(blob, 'portada-puntos-de-vista.webp');
+  setEstado(`Portada Puntos de vista lista (${Math.round(blob.size / 1024)} KB).`);
+});
+
+document.getElementById('btn-puntos-vista-miniatura').addEventListener('click', async () => {
   setEstado('Generando miniatura Puntos de vista…');
-  await dibujarPuntosVista(exportCanvas, { photo: estado.photo, focal: estado.focal });
+  await dibujarPuntosVistaMiniatura(exportCanvas, { photo: estado.photo, focal: estado.focal });
   const blob = await exportarWebp(exportCanvas, 100 * 1024);
   descargarBlob(blob, 'miniatura-puntos-de-vista.webp');
   setEstado(`Miniatura Puntos de vista lista (${Math.round(blob.size / 1024)} KB).`);

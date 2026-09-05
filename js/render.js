@@ -252,8 +252,9 @@ async function dibujarMiniatura(canvas, { photo, credito, focal, variante = 'neg
 }
 
 // ============================================================
-// MINIATURA "PUNTOS DE VISTA" — funcion aparte, no toca Portada ni Miniatura.
-// Mismo tamaño que la Miniatura normal (1200x628), NO el de Portada.
+// "PUNTOS DE VISTA" — funcion aparte, no toca Portada ni Miniatura.
+// Existe en DOS tamaños, igual que las piezas normales: Portada (1800x1200)
+// y Miniatura (1200x628). Mismo diseño en los dos, solo cambia el lienzo.
 // Panel izquierdo (logo + "Puntos de vista") + panel derecho (foto del autor
 // en blanco y negro) + banner terracota inferior. Texto SIEMPRE fijo.
 // ============================================================
@@ -271,13 +272,10 @@ async function preloadPV() {
   await Promise.all(Object.values(PV_ASSETS).map(loadImage));
 }
 
-// Mismo tamaño que la Miniatura normal: 1200x628 (el Canva original mide
-// 2560x1440 / 16:9 — las proporciones internas se calculan igual, sólo
-// cambia el lienzo final donde se ubican).
-const PV_W = MINI_W;
-const PV_H = MINI_H;
-
-async function dibujarPuntosVista(canvas, { photo, focal }) {
+// El Canva original mide 2560x1440 (16:9). Las proporciones se calculan como
+// fracciones de ese original y se aplican al lienzo que se pida (PV_W/PV_H),
+// para que el mismo diseño sirva tanto en tamaño Portada como Miniatura.
+async function dibujarPuntosVistaEn(canvas, { photo, focal, PV_W, PV_H }) {
   canvas.width = PV_W;
   canvas.height = PV_H;
   const ctx = canvas.getContext('2d');
@@ -387,6 +385,14 @@ async function dibujarPuntosVista(canvas, { photo, focal }) {
   ctx.drawImage(lineaVertical, bordeRayadoX - 2, 0, 4, contentH);
   // 2) entre el panel de texto y la foto
   ctx.drawImage(lineaVertical, rightX - 2, 0, 4, contentH);
+}
+
+// Las dos piezas reales que se usan: Portada (1800x1200) y Miniatura (1200x628).
+async function dibujarPuntosVistaPortada(canvas, { photo, focal }) {
+  await dibujarPuntosVistaEn(canvas, { photo, focal, PV_W: PORTADA_W, PV_H: PORTADA_H });
+}
+async function dibujarPuntosVistaMiniatura(canvas, { photo, focal }) {
+  await dibujarPuntosVistaEn(canvas, { photo, focal, PV_W: MINI_W, PV_H: MINI_H });
 }
 
 // Exporta el canvas a WebP, bajando calidad (y si hace falta, tamaño) hasta quedar bajo maxBytes.
